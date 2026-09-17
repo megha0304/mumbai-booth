@@ -64,13 +64,24 @@ function getLocalIp() {
   return 'localhost';
 }
 
-function getHostBaseUrl() {
-  if (process.env.HOST_URL) {
-    return process.env.HOST_URL.replace(/\/+$/, '');
+
+let configuredHostUrl = process.env.HOST_URL || null;
+
+function getHostBaseUrl(req) {
+  if (configuredHostUrl) {
+    return configuredHostUrl.replace(/\/+$/, '');
+  }
+  if (req) {
+    const forwardedHost = req.headers['x-forwarded-host'] || req.headers.host;
+    const forwardedProto = req.headers['x-forwarded-proto'] || (req.secure ? 'https' : 'http');
+    if (forwardedHost && !forwardedHost.includes('localhost') && !forwardedHost.includes('127.0.0.1')) {
+      return `${forwardedProto}://${forwardedHost}`;
+    }
   }
   const ip = getLocalIp();
   return `http://${ip}:${PORT}`;
 }
+
 
 // In-Memory Sessions
 const sessions = new Map();
@@ -99,11 +110,24 @@ app.get('/print', (req, res) => {
 });
 
 // API: Get Network info & Host URL
+
+// API: Update Host URL on the fly
+app.post('/api/config/host', (req, res) => {
+  const { hostUrl } = req.body;
+  if (hostUrl) {
+    configuredHostUrl = hostUrl.trim().replace(/\/+$/, '');
+    console.log('Public Host URL updated to:', configuredHostUrl);
+  } else {
+    configuredHostUrl = null;
+  }
+  res.json({ success: true, hostUrl: getHostBaseUrl(req) });
+});
+
 app.get('/api/network', (req, res) => {
   res.json({
     localIp: getLocalIp(),
     port: PORT,
-    hostUrl: getHostBaseUrl(),
+    hostUrl: getHostBaseUrl(req),
     isCustomHost: !!process.env.HOST_URL
   });
 });
@@ -122,7 +146,7 @@ app.post('/api/session', async (req, res) => {
     const selectedTheme = artEngine.THEMES[themeId] || artEngine.THEMES['marine-drive'];
     const sessionId = generateSessionId();
 
-    const hostBase = getHostBaseUrl();
+    const hostBase = (req.body.customHost && req.body.customHost.trim()) ? req.body.customHost.trim().replace(/\/+$/, '') : getHostBaseUrl(req);
     const uploadUrl = `${hostBase}/upload?session=${sessionId}&theme=${selectedTheme.id}`;
 
     // Generate dynamic QR code as Data URL

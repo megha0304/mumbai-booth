@@ -39,7 +39,11 @@ async function loadNetworkInfo() {
   try {
     const res = await fetch('/api/network');
     const data = await res.json();
+    
     hostDisplay.textContent = data.hostUrl;
+    hostDisplay.title = 'Click to change QR Code Public/Tunnel URL';
+    hostDisplay.style.cursor = 'pointer';
+
   } catch (e) {
     hostDisplay.textContent = window.location.origin;
   }
@@ -318,6 +322,26 @@ document.getElementById('btnCloseGallery').addEventListener('click', closeGaller
 document.getElementById('btnFullscreen').addEventListener('click', toggleFullscreen);
 
 // Init
+
+hostDisplay.addEventListener('click', async () => {
+  const current = hostDisplay.textContent;
+  const newUrl = prompt('Enter Public / Tunnel URL for Mobile QR Code:\n(e.g., https://your-tunnel.loca.lt or https://xyz.trycloudflare.com)', current);
+  if (newUrl && newUrl.trim() !== '') {
+    try {
+      const res = await fetch('/api/config/host', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ hostUrl: newUrl.trim() })
+      });
+      const data = await res.json();
+      hostDisplay.textContent = data.hostUrl;
+      alert('QR Code host updated to: ' + data.hostUrl);
+    } catch (e) {
+      alert('Failed to update host: ' + e.message);
+    }
+  }
+});
+
 loadNetworkInfo();
 loadThemes();
 showScreen('themes');
