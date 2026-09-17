@@ -1,0 +1,19 @@
+﻿# Dependencies
+node_modules/
+
+# Environment Variables & Secrets
+.env
+
+# Uploaded Photos & Generated Stickers (ignore runtime images)
+uploads/*
+!uploads/.gitkeep
+stickers/*
+!stickers/.gitkeep
+
+# Local test artifacts
+test_portrait.png
+
+# Operating System files & logs
+.DS_Store
+Thumbs.db
+*.log

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Print Sticker - JS Community Mumbai</title>
+  <link rel="stylesheet" href="/css/print.css">
+</head>
+<body>
+
+  <!-- On-Screen Operator Controls (Hidden on Print) -->
+  <div class="screen-controls">
+    <div>
+      <h2>🖨️ Booth Sticker Print Station</h2>
+      <p style="font-size: 0.85rem; color: #A1A1AA;">JS Community Mumbai • Event Station</p>
+    </div>
+    
+    <div class="options-group">
+      <label for="layoutSelect" style="font-size: 0.9rem;">Layout:</label>
+      <select id="layoutSelect">
+        <option value="single">Single Large (1 sticker)</option>
+        <option value="duo">Dual (2 stickers on 4x6 sheet)</option>
+        <option value="quad">Quad (4 mini stickers)</option>
+      </select>
+
+      <button class="btn-print-now" id="btnPrint">Print (Ctrl+P)</button>
+    </div>
+  </div>
+
+  <!-- Printable Area -->
+  <main class="print-canvas-area">
+    <div class="print-sheet layout-single" id="printSheet">
+      <div class="sticker-cell">
+        <img id="printImg" src="" alt="Sticker to Print">
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const stickerUrl = urlParams.get('url') || '/stickers/sample.png';
+    const autoPrint = urlParams.get('autoprint') === 'true';
+
+    const printImg = document.getElementById('printImg');
+    const printSheet = document.getElementById('printSheet');
+    const layoutSelect = document.getElementById('layoutSelect');
+    const btnPrint = document.getElementById('btnPrint');
+
+    printImg.src = stickerUrl;
+
+    function updateLayout(layout) {
+      printSheet.className = 'print-sheet layout-' + layout;
+      printSheet.innerHTML = '';
+
+      const count = layout === 'quad' ? 4 : (layout === 'duo' ? 2 : 1);
+      for (let i = 0; i < count; i++) {
+        const cell = document.createElement('div');
+        cell.className = 'sticker-cell';
+        const img = document.createElement('img');
+        img.src = stickerUrl;
+        cell.appendChild(img);
+        printSheet.appendChild(cell);
+      }
+    }
+
+    layoutSelect.addEventListener('change', (e) => {
+      updateLayout(e.target.value);
+    });
+
+    btnPrint.addEventListener('click', () => {
+      window.print();
+    });
+
+    printImg.onload = () => {
+      if (autoPrint) {
+        setTimeout(() => {
+          window.print();
+        }, 500);
+      }
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Upload Selfie - JS Community Mumbai</title>
+  <link rel="stylesheet" href="/css/mobile.css">
+  <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+
+  <!-- Top Header -->
+  <header class="mobile-header">
+    <div class="mobile-brand">
+      <div class="js-logo-sm">JS</div>
+      <div class="mobile-brand-title">JS <span>MUMBAI</span></div>
+    </div>
+    <div class="session-pill" id="sessionPill">BOM-0000</div>
+  </header>
+
+  <main class="mobile-main">
+
+    <!-- Form View -->
+    <div id="formView" style="display: flex; flex-direction: column; gap: 1.25rem;">
+      <!-- Selected Theme Card -->
+      <div class="theme-banner">
+        <div class="theme-banner-icon" id="themeIcon">🌉</div>
+        <div class="theme-banner-info">
+          <h3 id="themeName">Marine Drive Cyber-Dev</h3>
+          <p id="themeTagline">Queen's Necklace &amp; Async Loops</p>
+        </div>
+      </div>
+
+      <!-- Hidden File Inputs -->
+      <!-- 1. Dedicated Camera Selfie input -->
+      <input type="file" id="cameraInput" accept="image/*" capture="user" style="display: none;">
+      <!-- 2. Dedicated Photo Gallery input (no capture attribute so it opens album) -->
+      <input type="file" id="galleryInput" accept="image/*" style="display: none;">
+
+      <!-- Photo Picker Container -->
+      <div class="upload-box" id="uploadBox">
+        <div class="upload-placeholder" id="uploadPlaceholder">
+          <p style="font-size: 0.9rem; color: #94A3B8; margin-bottom: 0.25rem;">Select how you want to add your photo:</p>
+          
+          <div class="source-buttons-row">
+            <button type="button" class="btn-source btn-source-camera" id="btnOpenCam">
+              <span class="source-icon">📸</span>
+              <span class="source-label">Take Selfie</span>
+              <span class="source-sub">Open Camera</span>
+            </button>
+
+            <button type="button" class="btn-source btn-source-gallery" id="btnOpenGallery">
+              <span class="source-icon">🖼️</span>
+              <span class="source-label">Photo Gallery</span>
+              <span class="source-sub">Pick from Photos</span>
+            </button>
+          </div>
+        </div>
+
+        <img id="previewImg" src="" alt="Selfie Preview">
+        <button type="button" class="retake-btn" id="retakeBtn">↺ Change Photo</button>
+      </div>
+
+      <!-- Handle / Name Input -->
+      <div class="form-group">
+        <label for="handleInput">YOUR NAME OR HANDLE</label>
+        <input 
+          type="text" 
+          id="handleInput" 
+          class="handle-input" 
+          placeholder="@your_handle or Mumbai Dev"
+          maxlength="24"
+        >
+      </div>
+
+      <!-- Submit Button -->
+      <button type="button" class="btn-submit" id="btnSubmit" disabled>
+        ✨ Generate Mumbai JS Sticker
+      </button>
+    </div>
+
+    <!-- Loading State -->
+    <div class="mobile-loading" id="mobileLoading">
+      <div class="mobile-spinner"></div>
+      <h3 style="font-size: 1.3rem; margin-bottom: 0.5rem;">Generating Your Sticker...</h3>
+      <p style="color: var(--text-secondary); font-size: 0.95rem;">
+        Compositing your portrait with Mumbai landmarks and official JS badge!
+      </p>
+    </div>
+
+    <!-- Success View -->
+    <div class="mobile-success" id="mobileSuccess">
+      <div class="print-notice">
+        🖨️ <b>Your sticker is printing at the booth!</b><br>
+        Head to the screen to collect your physical vinyl sticker.
+      </div>
+
+      <div class="sticker-showcase">
+        <img id="finalStickerImg" src="" alt="Your Custom JS Mumbai Sticker">
+      </div>
+
+      <a id="btnDownloadSticker" class="btn-download" href="" download="js-mumbai-sticker.png">
+        📥 Save Sticker to Phone
+      </a>
+
+      <button type="button" id="btnShareSticker" class="btn-share" style="display: none;">
+        🚀 Share on X / LinkedIn (#JSMumbai)
+      </button>
+
+      <button type="button" class="btn-make-another" id="btnMakeAnother" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: #fff; padding: 0.8rem; border-radius: 14px; font-weight: 600; cursor: pointer;">
+        ↺ Make Another Sticker
+      </button>
+    </div>
+
+  </main>
+
+  <script src="/js/mobile.js"></script>
+</body>
+</html>

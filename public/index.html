@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JS Community Mumbai - Event Sticker Booth</title>
+  <link rel="stylesheet" href="/css/kiosk.css">
+  <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+  <canvas id="confettiCanvas"></canvas>
+
+  <!-- Header -->
+  <header class="kiosk-header">
+    <div class="brand-group">
+      <div class="js-logo-badge">JS</div>
+      <div class="brand-titles">
+        <h1>JS COMMUNITY <span>MUMBAI</span></h1>
+        <p>PHOTO BOOTH & CUSTOM VINYL STICKER STATION</p>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="host-badge" id="hostDisplay">Connecting...</div>
+      <button class="header-btn" id="btnOpenGallery" title="View previously generated stickers">
+        📂 Gallery
+      </button>
+      <button class="header-btn" id="btnFullscreen" title="Toggle Fullscreen (F)">
+        ⛶ Fullscreen
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="kiosk-content">
+    
+    <!-- Screen 1: Theme Selection -->
+    <section id="screenThemes" class="kiosk-screen active">
+      <div class="section-headline">
+        <h2>Choose Your Mumbai JavaScript Vibe</h2>
+        <p>Select a theme to personalize your custom event sticker</p>
+      </div>
+      <div class="themes-grid" id="themesContainer">
+        <!-- Injected dynamically via kiosk.js -->
+      </div>
+    </section>
+
+    <!-- Screen 2: QR Code Scan -->
+    <section id="screenQr" class="kiosk-screen">
+      <div class="qr-view-container">
+        <div class="qr-card-wrap">
+          <div class="qr-img-wrapper">
+            <div class="qr-pulse-ring"></div>
+            <img id="qrCodeImg" src="" alt="Scan QR Code to Upload Photo">
+          </div>
+          <div class="session-code-display" id="sessionCodeDisplay">Session: BOM-0000</div>
+        </div>
+
+        <div class="qr-instructions">
+          <span class="tag-chip" id="selectedThemeName">Marine Drive Cyber-Dev</span>
+          <h2>Scan with Your Phone Camera</h2>
+          
+          <div class="qr-steps-list">
+            <div class="qr-step-item">
+              <span class="step-number">1</span>
+              <span>Point your phone camera at the yellow QR code</span>
+            </div>
+            <div class="qr-step-item">
+              <span class="step-number">2</span>
+              <span>Snap a selfie or choose a photo from your gallery</span>
+            </div>
+            <div class="qr-step-item">
+              <span class="step-number">3</span>
+              <span>Add your handle and hit <b>Generate Sticker</b>!</span>
+            </div>
+          </div>
+
+          <div class="connection-status-box">
+            <div class="status-dot" id="statusDot"></div>
+            <span id="phoneConnectionStatus">Waiting for phone scan...</span>
+          </div>
+
+          <div class="action-row">
+            <button class="btn-secondary" id="btnBackToThemes">← Choose Different Theme</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Screen 3: Generating -->
+    <section id="screenGenerating" class="kiosk-screen">
+      <div class="generating-container">
+        <div class="spinner-orbit"></div>
+        <h2>Creating Your Mumbai JS Sticker</h2>
+        <p class="generating-subtitle" id="generatingSubtitle">Compositing artwork and vinyl die-cut borders...</p>
+      </div>
+    </section>
+
+    <!-- Screen 4: Sticker Reveal -->
+    <section id="screenReveal" class="kiosk-screen">
+      <div class="reveal-container">
+        <div class="sticker-stage">
+          <div class="sticker-preview-card">
+            <img id="stickerPreviewImg" src="" alt="Generated Sticker Artwork">
+          </div>
+        </div>
+
+        <div class="reveal-controls">
+          <span class="congrats-badge">🎉 STICKER GENERATED</span>
+          <h2>Your Custom JS Mumbai Sticker is Ready!</h2>
+          <p>Collect your printed sticker right here at the booth. You can also save the digital badge directly from your phone!</p>
+
+          <div class="print-actions">
+            <button class="btn-primary-print" id="btnPrintSticker">
+              🖨️ Print Sticker Now (P)
+            </button>
+            <div style="display: flex; gap: 1rem;">
+              <button class="btn-large-secondary" id="btnNewAttendee" style="flex: 1;">
+                ✨ Next Attendee (Space)
+              </button>
+              <button class="btn-large-secondary" id="btnReprintRecent" style="flex: 1;">
+                🔁 Reprint
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer / Operator Bar -->
+  <footer class="kiosk-footer">
+    <div>JS Community Mumbai • Event Booth Edition</div>
+    <div class="shortcuts-hint">
+      Operator Keys: 
+      <span>F</span> Fullscreen | 
+      <span>P</span> Print | 
+      <span>Space</span> Next Attendee | 
+      <span>Esc</span> Back
+    </div>
+  </footer>
+
+  <!-- Modal: Recent Stickers Gallery -->
+  <div class="gallery-modal" id="galleryModal">
+    <div class="gallery-modal-body">
+      <div class="gallery-header">
+        <h3>Recent Event Stickers</h3>
+        <button class="header-btn" id="btnCloseGallery">✕ Close</button>
+      </div>
+      <div class="gallery-grid" id="galleryGrid">
+        <!-- Loaded dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/kiosk.js"></script>
+</body>
+</html>
