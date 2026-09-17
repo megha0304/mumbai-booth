@@ -360,6 +360,7 @@ document.getElementById('btnNewAttendee').addEventListener('click', resetToTheme
 document.getElementById('btnPrintSticker').addEventListener('click', () => printSticker());
 document.getElementById('btnReprintRecent').addEventListener('click', () => printSticker());
 document.getElementById('btnOpenGallery').addEventListener('click', openGallery);
+document.getElementById('btnRefreshGallery').addEventListener('click', openGallery);
 document.getElementById('btnCloseGallery').addEventListener('click', closeGallery);
 document.getElementById('btnFullscreen').addEventListener('click', toggleFullscreen);
 
