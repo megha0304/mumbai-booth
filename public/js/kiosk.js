@@ -93,6 +93,54 @@ function renderThemes() {
 }
 
 // User selects a theme -> Create Session & Show QR
+
+let pollTimer = null;
+
+function startSessionPolling() {
+  stopSessionPolling();
+  pollTimer = setInterval(async () => {
+    if (!currentSession) return;
+    try {
+      const res = await fetch('/api/session/' + currentSession.id);
+      const data = await res.json();
+      if (data && data.session) {
+        if (data.session.status === 'phone_connected') {
+          phoneConnectionStatus.textContent = '📱 Phone Connected! Ready for selfie.';
+          statusDot.className = 'status-dot connected';
+        } else if (data.session.status === 'photo_uploading' || data.session.status === 'generating') {
+          if (!screens.generating.classList.contains('active') && !screens.reveal.classList.contains('active')) {
+            showScreen('generating');
+          }
+        } else if (data.session.status === 'completed' && data.session.stickerUrl) {
+          stopSessionPolling();
+          onStickerCompleted(data.session);
+        }
+      }
+    } catch (e) {}
+  }, 1500);
+}
+
+function stopSessionPolling() {
+  if (pollTimer) {
+    clearInterval(pollTimer);
+    pollTimer = null;
+  }
+}
+
+function onStickerCompleted(data) {
+  if (screens.reveal.classList.contains('active') && currentStickerUrl === data.stickerUrl) {
+    return; // Already revealed
+  }
+  clearInterval(msgInterval);
+  msgInterval = null;
+  stopSessionPolling();
+
+  currentStickerUrl = data.stickerUrl;
+  stickerPreviewImg.src = data.stickerUrl;
+  showScreen('reveal');
+  launchConfetti();
+}
+
 async function selectTheme(themeId) {
   try {
     const res = await fetch('/api/session', {
@@ -121,6 +169,7 @@ async function selectTheme(themeId) {
       statusDot.className = 'status-dot';
 
       showScreen('qr');
+      startSessionPolling();
     }
   } catch (err) {
     alert('Failed to start session: ' + err.message);
@@ -129,6 +178,7 @@ async function selectTheme(themeId) {
 
 // Reset / Back to Themes
 function resetToThemes() {
+  stopSessionPolling();
   if (currentSession) {
     socket.emit('kiosk:reset', { sessionId: currentSession.id });
   }
@@ -172,15 +222,7 @@ socket.on('status:update', (data) => {
   }
 });
 
-socket.on('sticker:ready', (data) => {
-  clearInterval(msgInterval);
-  msgInterval = null;
-
-  currentStickerUrl = data.stickerUrl;
-  stickerPreviewImg.src = data.stickerUrl;
-  showScreen('reveal');
-  launchConfetti();
-});
+socket.on('sticker:ready', (data) => onStickerCompleted(data));
 
 // Print Sticker
 function printSticker(urlToPrint) {

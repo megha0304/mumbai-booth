@@ -227,7 +227,7 @@ app.post('/api/upload', upload.single('photo'), async (req, res) => {
     });
 
     const hostBase = getHostBaseUrl();
-    const stickerUrl = `${hostBase}/stickers/${stickerFileName}`;
+    const stickerUrl = `/stickers/${stickerFileName}`;
 
     session.status = 'completed';
     session.stickerUrl = stickerUrl;
